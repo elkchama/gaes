@@ -20,29 +20,31 @@ class UsuariosController extends Controller
      * Guardar un nuevo usuario.
      */
     public function store(Request $request)
-    {
-        $request->validate([
-            'nombre'     => 'required|string|max:100',
-            'apellido'   => 'required|string|max:100',
-            'correo'     => 'required|email|max:150|unique:usuarios,correo',
-            'contrasena' => 'required|string|min:6',
-            'telefono'   => 'nullable|string|max:20',
-            'direccion'  => 'nullable|string|max:100',
-            'id_rol'     => 'required|exists:roles,id_rol', // Corrección en la validación
-        ]);
+{
+    dd($request->all()); // Esto detiene la ejecución y muestra los datos enviados.
+    $request->validate([
+        'nombre'     => 'required|string|max:100',
+        'apellido'   => 'required|string|max:100',
+        'correo'     => 'required|email|max:150|unique:usuarios,correo',
+        'contrasena' => 'required|string|min:6',
+        'telefono'   => 'nullable|string|max:20',
+        'direccion'  => 'nullable|string|max:100',
+        'id_rol'     => 'nullable|exists:roles,id_rol',
+    ]);
 
-        $usuario = Usuarios::create([
-            'nombre'     => $request->nombre,
-            'apellido'   => $request->apellido,
-            'correo'     => $request->correo,
-            'contrasena' => bcrypt($request->contrasena), // Cifrar la contraseña
-            'telefono'   => $request->telefono,
-            'direccion'  => $request->direccion,
-            'id_rol'     => $request->id_rol,
-        ]);
+    $usuario = Usuarios::create([
+        'nombre'     => $request->nombre,
+        'apellido'   => $request->apellido,
+        'correo'     => $request->correo,
+        'contrasena' => bcrypt($request->contrasena),
+        'telefono'   => $request->telefono,
+        'direccion'  => $request->direccion,
+        // Asigna el id_rol enviado o, en caso contrario, un valor por defecto (por ejemplo, 1)
+        'id_rol'     => $request->id_rol ?? 1,
+    ]);
 
-        return response()->json(['message' => 'Usuario creado con éxito', 'usuario' => $usuario], 201);
-    }
+    return response()->json(['message' => 'Usuario creado con éxito', 'usuario' => $usuario], 201);
+}
 
     /**
      * Mostrar un usuario por su ID.
